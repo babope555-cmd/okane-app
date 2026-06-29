@@ -475,19 +475,10 @@ function Sparkles({ count = 30, color = "#ffd97a" }) {
 function VideoPlayer({ src, onEnded, style }) {
   const [loading, setLoading] = useState(true);
   return (
-    <div
-      onClick={onEnded}
-      style={{
-        position: "fixed", inset: 0, zIndex: 9999,
-        background: "#000",
-        display: "flex", alignItems: "center", justifyContent: "center",
-        cursor: "pointer",
-        ...style,
-      }}
-    >
+    <div style={{ position: "fixed", inset: 0, zIndex: 9999, background: "#000", ...style }}>
       {loading && (
         <div style={{
-          position: "absolute", display: "flex",
+          position: "absolute", inset: 0, display: "flex",
           alignItems: "center", justifyContent: "center", color: "white", fontSize: 14,
         }}>読み込み中...</div>
       )}
@@ -498,12 +489,15 @@ function VideoPlayer({ src, onEnded, style }) {
         muted
         onCanPlayThrough={() => setLoading(false)}
         onEnded={onEnded}
-        style={{ width: "40%", maxWidth: 320, borderRadius: 16, boxShadow: "0 0 40px #00000088" }}
+        style={{
+          position: "absolute",
+          top: "50%", left: "50%",
+          transform: "translate(-50%, -50%)",
+          minWidth: "100%", minHeight: "100%",
+          width: "auto", height: "auto",
+          objectFit: "cover",
+        }}
       />
-      <div style={{
-        position: "absolute", bottom: 32, right: 24,
-        color: "rgba(255,255,255,0.5)", fontSize: 12, letterSpacing: 1,
-      }}>タップでスキップ</div>
     </div>
   );
 }
@@ -521,12 +515,12 @@ function SplashScreen({ onDone }) {
     <div onClick={finish} style={{
       position: "fixed", inset: 0, zIndex: 9999,
       background: "linear-gradient(145deg, #f8f6f1, #f0ede6)",
-      display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
+      display: "flex", alignItems: "center", justifyContent: "center",
       opacity: fading ? 0 : 1, transition: "opacity 0.7s ease", cursor: "pointer",
     }}>
       <Sparkles count={40} color="#c49a2a" />
       <Sparkles count={20} color="#c07fb0" />
-      <div style={{ textAlign: "center", zIndex: 1, padding: "0 24px", width: "100%", marginTop: "-100px" }}>
+      <div style={{ textAlign: "center", zIndex: 1, padding: "0 24px", width: "100%" }}>
         <div style={{
           fontSize: 32, fontWeight: 800, letterSpacing: 2,
           background: "linear-gradient(135deg, #c49a2a, #d4a843, #b06a9a)",
@@ -2664,10 +2658,10 @@ insight_messageとして未発見ピースへの気づきを必ず含めてく�
               { label: "感情が震えた", val: kanjou, icon: "💫", col: "#e8c870" },
               { label: "少し挑戦できた", val: comfort, icon: "🦋", col: "#a8e8c4" },
             ].map(item => (
-              <div key={item.label} style={{ flex: 1, minWidth: 0 }}>
+              <div key={item.label}>
                 <div style={{ fontSize: 20, marginBottom: 4 }}>{item.icon}</div>
                 <div style={{ fontSize: 22, fontWeight: 900, color: item.col, lineHeight: 1 }}>{item.val}<span style={{ fontSize: 11, fontWeight: 400, color: "#3a7a5a" }}>回</span></div>
-                <div style={{ fontSize: 8, color: "#3a7a5a", marginTop: 2, whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>{item.label}</div>
+                <div style={{ fontSize: 9, color: "#3a7a5a", marginTop: 2 }}>{item.label}</div>
               </div>
             ))}
           </div>
@@ -3374,7 +3368,7 @@ insight_messageとして未発見ピースへの気づきを必ず含めてく�
           if (inputStep === "slider") { setInputStep("tags"); return; }
           setShowInput(false); resetInput();
         }} style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", gap: 2, background: "none", border: "none", cursor: "pointer", padding: "4px 0" }}>
-          <span style={{ fontSize: 18, color: "#333" }}>↩</span>
+          <span style={{ fontSize: 18 }}>↩</span>
           <span style={{ fontSize: 9, color: COLORS.mutedText }}>戻る</span>
         </button>
       </div>}
@@ -3620,7 +3614,7 @@ insight_messageとして未発見ピースへの気づきを必ず含めてく�
           if (showInput) { setShowInput(false); resetInput(); }
           else if (tab !== "home") setTab("home");
         }} style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", gap: 3, background: "none", border: "none", cursor: "pointer", padding: "6px 0" }}>
-          <span style={{ fontSize: 18, color: "#333" }}>↩</span>
+          <span style={{ fontSize: 18 }}>↩</span>
           <span style={{ fontSize: 9, color: COLORS.mutedText }}>戻る</span>
         </button>
       </div>
