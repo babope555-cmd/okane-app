@@ -1335,15 +1335,23 @@ function AIResultCard({ result, onClose, onCloseToHome }) {
 // ─── その他サブカテゴリ自由入力欄（独立コンポーネント）──────────
 function OtherSubInput({ value, onChange, onSubmit }) {
   const inputRef = useRef(null);
+  const composingRef = useRef(false);
   return (
     <div style={{ marginTop: 8, padding: "0 4px" }}>
       <input
         ref={inputRef}
         type="text"
         defaultValue={value}
+        onCompositionStart={() => { composingRef.current = true; }}
+        onCompositionEnd={() => { composingRef.current = false; }}
+        onKeyDown={e => {
+          if (e.key === "Enter" && !composingRef.current) {
+            e.preventDefault();
+            onSubmit(inputRef.current ? inputRef.current.value : value);
+          }
+        }}
         onBlur={e => onChange(e.target.value)}
-        onCompositionEnd={e => onChange(e.target.value)}
-        placeholder="自由に入力する"
+        placeholder="自由に入力する（入力後、確定キーを押してください）"
         style={{
           width: "100%", padding: "12px 14px", borderRadius: 14,
           border: "2px solid #d4b8f0", fontSize: 14, color: "#4a3a5a",
