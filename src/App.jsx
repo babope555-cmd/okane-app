@@ -475,7 +475,7 @@ function Sparkles({ count = 30, color = "#ffd97a" }) {
 function VideoPlayer({ src, onEnded, style }) {
   const [loading, setLoading] = useState(true);
   return (
-    <div style={{ position: "fixed", inset: 0, zIndex: 9999, background: "#000", ...style }}>
+    <div onClick={onEnded} style={{ position: "fixed", inset: 0, zIndex: 9999, background: "#000", display: "flex", alignItems: "center", justifyContent: "center", ...style }}>
       {loading && (
         <div style={{
           position: "absolute", inset: 0, display: "flex",
@@ -490,14 +490,15 @@ function VideoPlayer({ src, onEnded, style }) {
         onCanPlayThrough={() => setLoading(false)}
         onEnded={onEnded}
         style={{
-          position: "absolute",
-          top: "50%", left: "50%",
-          transform: "translate(-50%, -50%)",
-          minWidth: "100%", minHeight: "100%",
-          width: "auto", height: "auto",
-          objectFit: "cover",
+          width: "55%", maxWidth: 260,
+          borderRadius: 16,
+          boxShadow: "0 0 40px rgba(255,255,255,0.15)",
         }}
       />
+      <div style={{
+        position: "absolute", bottom: 24, right: 20,
+        color: "rgba(255,255,255,0.6)", fontSize: 12, pointerEvents: "none",
+      }}>タップでスキップ</div>
     </div>
   );
 }
@@ -520,9 +521,9 @@ function SplashScreen({ onDone }) {
     }}>
       <Sparkles count={40} color="#c49a2a" />
       <Sparkles count={20} color="#c07fb0" />
-      <div style={{ textAlign: "center", zIndex: 1, padding: "0 24px", width: "100%" }}>
+      <div style={{ textAlign: "center", zIndex: 1, padding: "0 24px", width: "100%", paddingBottom: "env(safe-area-inset-bottom, 24px)" }}>
         <div style={{
-          fontSize: 32, fontWeight: 800, letterSpacing: 2,
+          fontSize: 38, fontWeight: 800, letterSpacing: 1, whiteSpace: "nowrap",
           background: "linear-gradient(135deg, #c49a2a, #d4a843, #b06a9a)",
           WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", marginBottom: 12,
         }}>お金の器</div>
@@ -530,7 +531,7 @@ function SplashScreen({ onDone }) {
           タップしてはじめる
         </div>
         <div style={{ fontSize: 28, animation: "pulseGlow 2s ease-in-out infinite" }}>✦</div>
-        <div style={{ fontSize: 10, color: "#aaa", marginTop: 24 }}>（しばらく待つと自動で進みます）</div>
+        <div style={{ fontSize: 10, color: "#aaa", marginTop: 24, marginBottom: 16 }}>（しばらく待つと自動で進みます）</div>
       </div>
     </div>
   );
