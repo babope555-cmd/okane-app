@@ -490,7 +490,7 @@ function VideoPlayer({ src, onEnded, style }) {
         onCanPlayThrough={() => setLoading(false)}
         onEnded={onEnded}
         style={{
-          width: "85%", maxWidth: 380,
+          width: "92%", maxWidth: 420,
           borderRadius: 16,
           boxShadow: "0 0 40px rgba(255,255,255,0.15)",
         }}
@@ -3369,7 +3369,7 @@ insight_messageとして未発見ピースへの気づきを必ず含めてく�
           if (inputStep === "slider") { setInputStep("tags"); return; }
           setShowInput(false); resetInput();
         }} style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", gap: 2, background: "none", border: "none", cursor: "pointer", padding: "4px 0" }}>
-          <span style={{ fontSize: 18 }}>↩</span>
+          <span style={{ fontSize: 18, color: "#333" }}>↩</span>
           <span style={{ fontSize: 9, color: COLORS.mutedText }}>戻る</span>
         </button>
       </div>}
@@ -3615,7 +3615,7 @@ insight_messageとして未発見ピースへの気づきを必ず含めてく�
           if (showInput) { setShowInput(false); resetInput(); }
           else if (tab !== "home") setTab("home");
         }} style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", gap: 3, background: "none", border: "none", cursor: "pointer", padding: "6px 0" }}>
-          <span style={{ fontSize: 18 }}>↩</span>
+          <span style={{ fontSize: 18, color: "#333" }}>↩</span>
           <span style={{ fontSize: 9, color: COLORS.mutedText }}>戻る</span>
         </button>
       </div>
