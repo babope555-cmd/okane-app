@@ -490,7 +490,7 @@ function VideoPlayer({ src, onEnded, style }) {
         onCanPlayThrough={() => setLoading(false)}
         onEnded={onEnded}
         style={{
-          width: "65%", maxWidth: 300,
+          width: "75%", maxWidth: 340,
           borderRadius: 16,
           boxShadow: "0 0 40px rgba(255,255,255,0.15)",
         }}
@@ -521,9 +521,9 @@ function SplashScreen({ onDone }) {
     }}>
       <Sparkles count={40} color="#c49a2a" />
       <Sparkles count={20} color="#c07fb0" />
-      <div style={{ textAlign: "center", zIndex: 1, padding: "0 24px", width: "100%", paddingBottom: "env(safe-area-inset-bottom, 24px)" }}>
+      <div style={{ textAlign: "center", zIndex: 1, padding: "0 24px", width: "100%", paddingTop: 40, paddingBottom: "env(safe-area-inset-bottom, 24px)" }}>
         <div style={{
-          fontSize: "clamp(28px, 9vw, 34px)", fontWeight: 800, letterSpacing: 0.5, whiteSpace: "nowrap",
+          fontSize: "clamp(28px, 9vw, 34px)", fontWeight: 800, letterSpacing: 0.5, whiteSpace: "nowrap", lineHeight: 1.3, paddingTop: 4,
           background: "linear-gradient(135deg, #c49a2a, #d4a843, #b06a9a)",
           WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", marginBottom: 12,
         }}>お金の器</div>
