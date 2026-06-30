@@ -490,7 +490,7 @@ function VideoPlayer({ src, onEnded, style }) {
         onCanPlayThrough={() => setLoading(false)}
         onEnded={onEnded}
         style={{
-          width: "75%", maxWidth: 340,
+          width: "85%", maxWidth: 380,
           borderRadius: 16,
           boxShadow: "0 0 40px rgba(255,255,255,0.15)",
         }}
