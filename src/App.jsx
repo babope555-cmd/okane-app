@@ -1315,6 +1315,22 @@ function AIResultCard({ result, onClose, onCloseToHome }) {
             </div>
           </div>
         )}
+        <button onClick={() => {
+          const tagLabels = result.valueTags && result.valueTags.length > 0
+            ? `『${result.valueTags.slice(0, 2).join("』『")}』の才能ピースが育ちました✨`
+            : "循環が生まれました✨";
+          const text = `+${pts}循環エネルギー獲得！🌱 ${tagLabels}\n#お金の器`;
+          const url = "https://okane-app-two.vercel.app/";
+          const shareUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`;
+          window.open(shareUrl, "_blank", "noopener,noreferrer");
+        }} style={{
+          width: "100%", padding: 12, borderRadius: 12,
+          background: "#000000", border: "none",
+          color: "white", fontWeight: 700, fontSize: 14, cursor: "pointer",
+          marginBottom: 10, display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
+        }}>
+          <span style={{ fontSize: 16 }}>𝕏</span> シェアする
+        </button>
         <button onClick={onClose} style={{
           width: "100%", padding: 12, borderRadius: 12,
           background: "white", border: "2px solid #c49a2a",
