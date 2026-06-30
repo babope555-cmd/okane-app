@@ -1312,9 +1312,9 @@ export default function App() {
   const [tab, setTab] = useState("home");
 
   // ── インメモリ初期値 ──
-  const [energy, setEnergy] = useState(47);
-  const [level, setLevel] = useState(2);
-  const [history, setHistory] = useState(RECENT_HISTORY);
+  const [energy, setEnergy] = useState(0);
+  const [level, setLevel] = useState(1);
+  const [history, setHistory] = useState([]);
   const [stats, setStats] = useState(null);
 
   const [showInput, setShowInput] = useState(false);
