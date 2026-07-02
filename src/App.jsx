@@ -743,7 +743,7 @@ function TalentMatchModal({ onClose, insightMessage, topValues, topTalents, aiPc
           ? Object.entries(userProfile).map(([k, v]) => `${k}:${v}`).join(" / ")
           : "未回答";
 
-        const resp = await fetch("https://api.anthropic.com/v1/messages", {
+        const resp = await fetch("/api/claude", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
@@ -1615,7 +1615,7 @@ insight_messageについて：
 insight_messageとして未発見ピースへの気づきを必ず含めてください。`;
 
     try {
-      const resp = await fetch("https://api.anthropic.com/v1/messages", {
+      const resp = await fetch("/api/claude", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
