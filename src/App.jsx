@@ -1527,7 +1527,8 @@ export default function App() {
   const [calendarView, setCalendarView] = useState(true);
   const [calendarMonth, setCalendarMonth] = useState(() => { const d = new Date(); return { y: d.getFullYear(), m: d.getMonth() }; });
   const [calendarSelected, setCalendarSelected] = useState(null); // { dateStr, items[] }
-  const [onboardingDone, setOnboardingDone] = useState(false);
+  const [onboardingDone, setOnboardingDone] = useState(() => loadLS("onboardingDone", false));
+  useEffect(() => { saveLS("onboardingDone", onboardingDone); }, [onboardingDone]);
   const [showOnboarding, setShowOnboarding] = useState(false);
   const [obAnswersGlobal, setObAnswersGlobal] = useState({});
   const [obStepGlobal, setObStepGlobal] = useState(0);
@@ -3305,7 +3306,7 @@ insight_messageとして未発見ピースへの気づきを必ず含めてく�
           if (inputStep === "tags") { setInputStep("feeling"); return; }
           if (inputStep === "slider") { setInputStep("tags"); return; }
           setShowInput(false); resetInput();
-        }} style={{ background: "none", border: "none", color: COLORS.mutedText, fontSize: 20, cursor: "pointer", padding: 4, marginRight: 12 }}>↩</button>
+        }} style={{ background: "none", border: "none", color: "#3a2a1a", fontSize: 30, fontWeight: 700, cursor: "pointer", padding: 4, marginRight: 12, lineHeight: 1 }}>↩</button>
         <div style={{ flex: 1 }}>
           <div style={{ fontSize: 14, fontWeight: 700, color: COLORS.softWhite }}>
             {selCat ? `${selCat.icon} ${selCat.label}` : "支出を記録する"}
