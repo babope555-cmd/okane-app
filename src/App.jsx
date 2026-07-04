@@ -497,7 +497,7 @@ function Sparkles({ count = 30, color = "#ffd97a" }) {
 
 // ─── Splash Screen（Artifact用：ビデオなし・シンプル版）───────
 // ── 動画プレイヤー共通コンポーネント ──────────────────────────
-function VideoPlayer({ src, onEnded, style }) {
+function VideoPlayer({ src, onEnded, style, aspectRatio = "9 / 16" }) {
   const [loading, setLoading] = useState(true);
   return (
     <div onClick={onEnded} style={{ position: "fixed", inset: 0, zIndex: 9999, background: "#000", display: "flex", alignItems: "center", justifyContent: "center", ...style }}>
@@ -516,6 +516,8 @@ function VideoPlayer({ src, onEnded, style }) {
         onEnded={onEnded}
         style={{
           width: "92%", maxWidth: 420,
+          aspectRatio,
+          objectFit: "cover",
           borderRadius: 16,
           boxShadow: "0 0 40px rgba(255,255,255,0.15)",
         }}
