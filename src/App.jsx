@@ -707,17 +707,21 @@ function LevelUpModal({ fromLevel, toLevel, onClose }) {
 
   return (
     <div style={{
-      position: "fixed", inset: 0, zIndex: 500, background: "rgba(0,0,0,0.75)",
+      position: "fixed", inset: 0, zIndex: 500, backgroundColor: "rgba(0,0,0,0.75)",
       display: "flex", alignItems: "center", justifyContent: "center", padding: 24,
+      isolation: "isolate",
     }} onClick={onClose}>
       <div onClick={e => e.stopPropagation()} style={{
-        background: `radial-gradient(ellipse at 50% 30%, ${info.color}33 0%, #f8f6f1 60%)`,
+        backgroundColor: "#f8f6f1",
+        backgroundImage: `radial-gradient(ellipse at 50% 30%, ${info.color}33 0%, transparent 60%)`,
         borderRadius: 28, padding: "40px 32px", textAlign: "center",
         border: `2px solid ${info.color}88`, boxShadow: `0 0 60px ${info.color}66`,
-        animation: "bounceIn 0.5s cubic-bezier(0.16,1,0.3,1)",
+        animation: "cardPopIn 0.5s cubic-bezier(0.16,1,0.3,1)",
         maxWidth: 320, width: "100%", position: "relative", overflow: "hidden",
+        isolation: "isolate",
       }}>
         <Sparkles count={30} color={info.color} />
+        <div style={{ position: "relative", zIndex: 1 }}>
         <div style={{ position: "relative", height: 130, marginBottom: 16 }}>
           <div style={{ position: "absolute", left: "50%", top: 0, transform: "translateX(-50%)", animation: "vesselGrow 0.8s 0.3s both" }}>
             <svg width="120" height="120" viewBox="0 0 160 160">
@@ -738,14 +742,15 @@ function LevelUpModal({ fromLevel, toLevel, onClose }) {
           fontSize: 36, fontWeight: 900,
           background: `linear-gradient(135deg, ${info.color}, #c49a2a)`,
           WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", marginBottom: 4,
-        }}>{info.emoji} Lv.{toLevel}</div>
+        }}>{info.emoji} Level {toLevel}</div>
         <div style={{ fontSize: 16, fontWeight: 700, color: "#4a3f2f", marginBottom: 24 }}>{info.label}</div>
         <button onClick={onClose} style={{
           padding: "12px 32px", borderRadius: 999, fontSize: 14, fontWeight: 700,
           background: `linear-gradient(135deg, ${info.color}, #c49a2a)`,
           border: "none", color: "white", cursor: "pointer",
           boxShadow: `0 4px 24px ${info.color}66`,
-        }}>✦ 器に受け取る</button>
+        }}>✦ 器を受け取る</button>
+        </div>
       </div>
     </div>
   );
@@ -3975,6 +3980,7 @@ insight_messageとして未発見ピースへの気づきを必ず含めてく�
         @keyframes floatDot1 { 0%,100%{transform:translateY(0) translateX(0);opacity:0.5} 50%{transform:translateY(-6px) translateX(-3px);opacity:0.9} }
         @keyframes floatDot2 { 0%,100%{transform:translateY(0) translateX(0);opacity:0.6} 50%{transform:translateY(-10px) translateX(1px);opacity:1} }
         @keyframes bounceIn { 0%{transform:scale(0.3);opacity:0} 60%{transform:scale(1.15);opacity:1} 80%{transform:scale(0.95)} 100%{transform:scale(1)} }
+        @keyframes cardPopIn { 0%{transform:scale(0.3)} 60%{transform:scale(1.15)} 80%{transform:scale(0.95)} 100%{transform:scale(1)} }
         @keyframes vesselGrow { from{transform:translateX(-50%) scale(0.5);opacity:0} to{transform:translateX(-50%) scale(1);opacity:1} }
         @keyframes sparkleFloat { 0%{opacity:0;transform:translateY(0) scale(0.5)} 30%{opacity:1;transform:translateY(-8px) scale(1)} 70%{opacity:0.8;transform:translateY(-16px) scale(1)} 100%{opacity:0;transform:translateY(-24px) scale(0.5)} }
         @keyframes fadeInOut { 0%{opacity:0} 30%{opacity:1} 70%{opacity:1} 100%{opacity:0} }
