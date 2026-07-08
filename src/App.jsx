@@ -739,10 +739,16 @@ function LevelUpModal({ fromLevel, toLevel, onClose }) {
         </div>
         <div style={{ fontSize: 12, color: "#8a7a6a", letterSpacing: 2, marginBottom: 6 }}>LEVEL UP</div>
         <div style={{
-          fontSize: 36, fontWeight: 900,
-          background: `linear-gradient(135deg, ${info.color}, #c49a2a)`,
-          WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent", marginBottom: 4,
-        }}>{info.emoji} Level {toLevel}</div>
+          fontSize: 36, fontWeight: 900, lineHeight: 1.3, padding: "4px 0",
+          display: "flex", alignItems: "center", justifyContent: "center", gap: 8,
+          marginBottom: 4,
+        }}>
+          <span style={{ fontSize: 32, lineHeight: 1 }}>{info.emoji}</span>
+          <span style={{
+            background: `linear-gradient(135deg, ${info.color}, #c49a2a)`,
+            WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent",
+          }}>Level {toLevel}</span>
+        </div>
         <div style={{ fontSize: 16, fontWeight: 700, color: "#4a3f2f", marginBottom: 24 }}>{info.label}</div>
         <button onClick={onClose} style={{
           padding: "12px 32px", borderRadius: 999, fontSize: 14, fontWeight: 700,
