@@ -1538,13 +1538,18 @@ export default function App() {
       setPendingLevelUp({ from: level, to: newLevelObj.lv });
       // メール登録モーダルは、この後の「あなたの持つ価値を〜」(TalentMatchModal)を
       // 閉じたタイミングで表示する（下のTalentMatchModal onCloseを参照）。
-      // Lv5初回到達時のみTalentMatchModal表示
+      // 器動画（utuwa.mp4）のトリガーは「今回このタイミングでLv5をまたいだか」で判定する。
+      // reachedLevels（過去に一度でも到達したかの永続記録）で判定すると、
+      // 同一セッション内で再テスト等によりLv5を再度またいだ際に演出がスキップされてしまうため分離。
+      if (newLevelObj.lv === 5 && level < 5) {
+        setHasPlayedUtuwa(false); // utuwa動画をトリガー
+        // TalentMatchModalはutuwa動画終了後に表示（VideoPlayerのonEndedで制御）
+      }
+      // reachedLevelsは「才能パズル機能を一度でも解放したか」の永続記録用（マイページ等の表示判定に使用）
       if (newLevelObj.lv === 5 && !reachedLevels.includes(5)) {
         const updated = [...reachedLevels, newLevelObj.lv];
         setReachedLevels(updated);
         try { localStorage.setItem("reachedLevels", JSON.stringify(updated)); } catch {}
-        setHasPlayedUtuwa(false); // utuwa動画をトリガー
-        // TalentMatchModalはutuwa動画終了後に表示（VideoPlayerのonEndedで制御）
       }
     }
     setLevel(newLevelObj.lv);
