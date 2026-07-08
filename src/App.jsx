@@ -1453,6 +1453,7 @@ function OtherSubInput({ value, onChange, onSubmit }) {
 // ─── Main App ──────────────────────────────────────────────────
 export default function App() {
   const [tab, setTab] = useState("home");
+  useEffect(() => { window.scrollTo({ top: 0, behavior: "instant" }); }, [tab]);
 
   // ── 永続化された初期値（localStorage） ──
   const [energy, setEnergy] = useState(() => loadLS("okane_energy", 0));
