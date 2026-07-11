@@ -842,7 +842,7 @@ function TalentMatchModal({ onClose, insightMessage, topValues, topTalents, aiPc
       <Sparkles count={40} color="#c07fb0" />
       <div style={{ fontSize: 52, marginBottom: 16, animation: "bounceIn 0.6s both", zIndex: 1 }}>🧩</div>
       <div style={{ fontSize: 22, fontWeight: 900, color: "#ffd97a", textAlign: "center", lineHeight: 1.7, marginBottom: 8, animation: "slideUpIn 0.8s 0.2s both", letterSpacing: 1, zIndex: 1 }}>
-        あなたの持つ価値を
+        必要とする人がいます
       </div>
       <div style={{
         fontSize: 22, fontWeight: 900,
@@ -850,7 +850,7 @@ function TalentMatchModal({ onClose, insightMessage, topValues, topTalents, aiPc
         WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent",
         textAlign: "center", lineHeight: 1.7, marginBottom: 24,
         animation: "slideUpIn 0.8s 0.35s both", letterSpacing: 1, zIndex: 1,
-      }}>必要とする人がいます</div>
+      }}>あなたの持つ価値を</div>
 
       {/* 上位才能領域タグ */}
       {topTalents && topTalents.length > 0 && (
