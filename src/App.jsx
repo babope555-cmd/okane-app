@@ -1573,6 +1573,7 @@ export default function App() {
   const resetInput = () => {
     setInputStep("sub"); setSelCat(null); setSelSubCat(null);
     setSelFeeling(null); setSelTimeInvest([]); setSliderVal(50); setSelTags([]);
+    setOtherSubText("");
   };
 
   const toggleTag = (id) => {
