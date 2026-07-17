@@ -936,15 +936,15 @@ talentsのルール：
               </div>
               {t.futsuu || t.kachi ? (
                 <>
-                  {/* ① あなたの"普通"（データ根拠） */}
-                  <div style={{ fontSize: 10, color: "#c07fb0", fontWeight: 700, letterSpacing: 1, marginBottom: 3 }}>あなたの"普通"</div>
+                  {/* ① あなたが"普通"だと思っていること（データ根拠） */}
+                  <div style={{ fontSize: 10, color: "#c07fb0", fontWeight: 700, letterSpacing: 1, marginBottom: 3 }}>あなたが"普通"だと思っていること</div>
                   <div style={{ fontSize: 13, color: "#f0e8ff", lineHeight: 1.8, marginBottom: 8 }}>{t.futsuu}</div>
                   {/* ② つなぎ */}
                   <div style={{ fontSize: 11, color: "#ffd97a", fontWeight: 700, textAlign: "center", marginBottom: 8, letterSpacing: 1 }}>
                     ▼ それは、誰にでもできることではありません
                   </div>
-                  {/* ③ 必要としている人 */}
-                  <div style={{ fontSize: 10, color: "#4db8c8", fontWeight: 700, letterSpacing: 1, marginBottom: 3 }}>必要としている人</div>
+                  {/* ③ あなたの"価値"を必要としている人 */}
+                  <div style={{ fontSize: 10, color: "#4db8c8", fontWeight: 700, letterSpacing: 1, marginBottom: 3 }}>あなたの"価値"を必要としている人</div>
                   <div style={{ fontSize: 13, color: "#f0e8ff", lineHeight: 1.8 }}>{t.kachi}</div>
                 </>
               ) : (
