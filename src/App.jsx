@@ -619,24 +619,24 @@ function LevelUpModal({ fromLevel, toLevel, onClose, skipFlash }) {
     }}>
       <Sparkles count={40} color={info.color} />
       <Sparkles count={20} color="#c49a2a" />
-      <div style={{ marginBottom: 28, animation: "vesselGrowCenter 0.8s 0.2s both" }}>
-        <svg width="200" height="200" viewBox="0 0 160 160">
+      <div style={{ marginBottom: 20, animation: "vesselGrowCenter 0.8s 0.2s both" }}>
+        <svg width="150" height="150" viewBox="0 0 160 160">
           <path d="M52 55 Q40 70 36 95 Q34 120 80 130 Q126 120 124 95 Q120 70 108 55 Z"
             fill={`${info.color}12`} stroke={info.color} strokeWidth="2" strokeOpacity="0.6" />
           <ellipse cx="80" cy="56" rx="28" ry="6" fill="none" stroke={info.color} strokeWidth="2" strokeOpacity="0.6" />
         </svg>
       </div>
-      <div style={{ fontSize: 13, color: "#9a8a8a", letterSpacing: 3, marginBottom: 18, animation: "slideUpIn 0.6s 0.3s both" }}>LEVEL UP</div>
-      <div style={{ fontSize: 40, fontWeight: 800, marginBottom: 14, display: "flex", alignItems: "center", gap: 12, animation: "slideUpIn 0.6s 0.4s both" }}>
-        <span style={{ fontSize: 34 }}>{info.emoji}</span>
+      <div style={{ fontSize: 12, color: "#9a8a8a", letterSpacing: 3, marginBottom: 14, animation: "slideUpIn 0.6s 0.3s both" }}>LEVEL UP</div>
+      <div style={{ fontSize: 32, fontWeight: 800, marginBottom: 10, display: "flex", alignItems: "center", gap: 10, animation: "slideUpIn 0.6s 0.4s both" }}>
+        <span style={{ fontSize: 28 }}>{info.emoji}</span>
         <span style={{
           background: `linear-gradient(135deg, ${info.color}, #c49a2a)`,
           WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent",
         }}>Level.{toLevel}</span>
       </div>
-      <div style={{ fontSize: 20, fontWeight: 700, color: "#3a2f2f", marginBottom: 44, animation: "slideUpIn 0.6s 0.5s both" }}>{info.label}</div>
+      <div style={{ fontSize: 17, fontWeight: 700, color: "#3a2f2f", marginBottom: 32, animation: "slideUpIn 0.6s 0.5s both" }}>{info.label}</div>
       <button onClick={onClose} style={{
-        padding: "16px 48px", borderRadius: 999, fontSize: 16, fontWeight: 700,
+        padding: "14px 42px", borderRadius: 999, fontSize: 15, fontWeight: 700,
         background: `linear-gradient(135deg, ${info.color}, #c49a2a)`,
         border: "none", color: "white", cursor: "pointer",
         boxShadow: `0 8px 32px ${info.color}55`,
