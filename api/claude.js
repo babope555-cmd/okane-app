@@ -110,7 +110,6 @@ export default async function handler(req, res) {
     max_tokens: maxTokens,
     messages: body.messages,
     ...(body.system ? { system: body.system } : {}),
-    ...(body.stream === true ? { stream: true } : {}),
   };
 
   // 7) Anthropic APIへ転送（タイムアウト＋1回だけ自動リトライ）
@@ -142,40 +141,19 @@ export default async function handler(req, res) {
       upstream = await callAnthropic();
     }
 
+    const data = await upstream.json();
+
     if (!upstream.ok) {
-      // ストリーミングでもエラー時はJSONで返す（フロント側の !resp.ok 分岐で処理される）
-      const errData = await upstream.json().catch(() => ({}));
-      console.error("[claude-proxy] upstream error", upstream.status, errData?.error?.type);
+      // Anthropic側のエラーはログに残しつつ、簡潔に返す
+      console.error("[claude-proxy] upstream error", upstream.status, data?.error?.type);
       return sendError(
         res,
         upstream.status,
-        errData?.error?.type || "upstream_error",
+        data?.error?.type || "upstream_error",
         "AI判定サービスが一時的に利用できません"
       );
     }
 
-    // ストリーミング要求時：Anthropicからの生SSEチャンクをそのままクライアントへ中継
-    if (payload.stream) {
-      res.status(200);
-      res.setHeader("Content-Type", "text/event-stream");
-      res.setHeader("Cache-Control", "no-cache");
-      res.setHeader("Connection", "keep-alive");
-      const reader = upstream.body.getReader();
-      try {
-        while (true) {
-          const { done, value } = await reader.read();
-          if (done) break;
-          res.write(value);
-        }
-      } catch (streamErr) {
-        console.error("[claude-proxy] stream relay failed:", streamErr?.message);
-      } finally {
-        res.end();
-      }
-      return;
-    }
-
-    const data = await upstream.json();
     return res.status(200).json(data);
   } catch (err) {
     const isTimeout = err?.name === "AbortError";
