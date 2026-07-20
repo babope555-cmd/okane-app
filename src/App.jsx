@@ -976,6 +976,18 @@ tenshokuのルール：
         animation: "slideUpIn 0.8s 0.8s both",
         boxShadow: "0 8px 40px #ffd97a55", zIndex: 1, position: "relative",
       }}>✦ 閉じる</button>
+
+      {/* 【テスト用・一時的に復活】再診断ボタン：確認が終わったら削除してOK */}
+      {phase === "reveal" && !error && (
+        <div style={{ zIndex: 1, marginTop: 16, textAlign: "center", animation: "slideUpIn 0.8s 1.0s both" }}>
+          <div style={{ fontSize: 9, color: "#ff9f43", marginBottom: 6, letterSpacing: 1 }}>【テスト用】</div>
+          <button onClick={runDiagnosis} style={{
+            fontSize: 11, color: "#c07fb0", background: "none",
+            border: "1px solid #c07fb055", borderRadius: 999, padding: "8px 18px",
+            cursor: "pointer",
+          }}>🔄 診断し直す（テスト用）</button>
+        </div>
+      )}
     </div>
     </div>
   );
