@@ -1,5 +1,5 @@
 // ============================================================
-// api/claude.js — 「お金の器」AI判定用APIプロキシ（強化版＋ライセンスキー対応 v10）
+// api/claude.js — 「お金の器」AI判定用APIプロキシ（強化版）
 //
 // フロントエンドとの契約（変更なし）:
 //   POST /api/claude
@@ -20,22 +20,6 @@ const MAX_BODY_BYTES = 20000;   // リクエスト本文の上限（約20KB）
 const RATE_LIMIT_WINDOW_MS = 60 * 1000; // 1分あたり
 const RATE_LIMIT_MAX = 10;              // 同一IPから10回まで
 const UPSTREAM_TIMEOUT_MS = 45 * 1000;  // Anthropic応答待ちの上限
-
-// ── ライセンスキー（プレミアム機能）────────────────────────
-// REQUIRE_LICENSE:
-//   Vercel環境変数で "true" にすると、有効なライセンスキーを
-//   持つ人だけがAI判定を使える（＝販売開始モード）。
-//   未設定 or "true"以外なら全員AI判定OK（＝モニター期間モード）。
-// VALID_LICENSE_KEYS:
-//   有効なキーをカンマ区切りで登録（例: UTSUWA-K7M2-P9X4,UTSUWA-B3N8-R5T1）
-//   購入者が増えたらVercelの画面でここに追記→再デプロイするだけ。
-const REQUIRE_LICENSE = process.env.REQUIRE_LICENSE === "true";
-const VALID_LICENSE_KEYS = new Set(
-  (process.env.VALID_LICENSE_KEYS || "")
-    .split(",")
-    .map((k) => k.trim())
-    .filter(Boolean)
-);
 
 // 許可するアクセス元（本番ドメイン＋ローカル開発）
 const ALLOWED_ORIGINS = [
@@ -84,20 +68,6 @@ export default async function handler(req, res) {
     return sendError(res, 403, "forbidden_origin", "許可されていないアクセス元です");
   }
 
-  // 2.5) ライセンスキー照合（REQUIRE_LICENSE=true のときだけ発動）
-  //   キーが無効なら 402 を返す → フロント側は既存フォールバックが発動
-  if (REQUIRE_LICENSE) {
-    const userLicense = (req.headers["x-license-key"] || "").trim();
-    if (!userLicense || !VALID_LICENSE_KEYS.has(userLicense)) {
-      return sendError(
-        res,
-        402,
-        "license_required",
-        "この機能はライセンスキーをお持ちの方のみご利用いただけます"
-      );
-    }
-  }
-
   // 3) APIキー確認（Vercel環境変数）
   const apiKey = process.env.ANTHROPIC_API_KEY;
   if (!apiKey) {
@@ -140,6 +110,7 @@ export default async function handler(req, res) {
     max_tokens: maxTokens,
     messages: body.messages,
     ...(body.system ? { system: body.system } : {}),
+    ...(body.stream === true ? { stream: true } : {}),
   };
 
   // 7) Anthropic APIへ転送（タイムアウト＋1回だけ自動リトライ）
@@ -171,19 +142,40 @@ export default async function handler(req, res) {
       upstream = await callAnthropic();
     }
 
-    const data = await upstream.json();
-
     if (!upstream.ok) {
-      // Anthropic側のエラーはログに残しつつ、簡潔に返す
-      console.error("[claude-proxy] upstream error", upstream.status, data?.error?.type);
+      // ストリーミングでもエラー時はJSONで返す（フロント側の !resp.ok 分岐で処理される）
+      const errData = await upstream.json().catch(() => ({}));
+      console.error("[claude-proxy] upstream error", upstream.status, errData?.error?.type);
       return sendError(
         res,
         upstream.status,
-        data?.error?.type || "upstream_error",
+        errData?.error?.type || "upstream_error",
         "AI判定サービスが一時的に利用できません"
       );
     }
 
+    // ストリーミング要求時：Anthropicからの生SSEチャンクをそのままクライアントへ中継
+    if (payload.stream) {
+      res.status(200);
+      res.setHeader("Content-Type", "text/event-stream");
+      res.setHeader("Cache-Control", "no-cache");
+      res.setHeader("Connection", "keep-alive");
+      const reader = upstream.body.getReader();
+      try {
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          res.write(value);
+        }
+      } catch (streamErr) {
+        console.error("[claude-proxy] stream relay failed:", streamErr?.message);
+      } finally {
+        res.end();
+      }
+      return;
+    }
+
+    const data = await upstream.json();
     return res.status(200).json(data);
   } catch (err) {
     const isTimeout = err?.name === "AbortError";
