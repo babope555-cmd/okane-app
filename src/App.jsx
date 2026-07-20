@@ -590,6 +590,10 @@ function LevelUpModal({ fromLevel, toLevel, onClose, skipFlash }) {
       <div style={{
         position: "fixed", inset: 0, zIndex: 500,
         background: "radial-gradient(ellipse at center, #fffdf0 0%, #f5e6b0 60%, #e8c870 100%)",
+        overflowY: "auto",
+      }}>
+      <div style={{
+        minHeight: "100%",
         display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: 32,
       }}>
         <Sparkles count={60} color="#c49a2a" />
@@ -607,6 +611,7 @@ function LevelUpModal({ fromLevel, toLevel, onClose, skipFlash }) {
           animation: "slideUpIn 0.8s 0.5s both", boxShadow: "0 8px 32px #c49a2a55",
         }}>✦ つづける</button>
       </div>
+      </div>
     );
   }
 
@@ -614,34 +619,38 @@ function LevelUpModal({ fromLevel, toLevel, onClose, skipFlash }) {
     <div style={{
       position: "fixed", inset: 0, zIndex: 500,
       background: `radial-gradient(ellipse at 50% 35%, ${info.color}1a 0%, transparent 60%), #fdf8f5`,
-      display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: 32,
       overflowY: "auto",
+    }}>
+    <div style={{
+      minHeight: "100%",
+      display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: 32,
     }}>
       <Sparkles count={40} color={info.color} />
       <Sparkles count={20} color="#c49a2a" />
-      <div style={{ marginBottom: 20, animation: "vesselGrowCenter 0.8s 0.2s both" }}>
-        <svg width="150" height="150" viewBox="0 0 160 160">
+      <div style={{ marginBottom: 14, animation: "vesselGrowCenter 0.8s 0.2s both" }}>
+        <svg width="115" height="115" viewBox="0 0 160 160">
           <path d="M52 55 Q40 70 36 95 Q34 120 80 130 Q126 120 124 95 Q120 70 108 55 Z"
             fill={`${info.color}12`} stroke={info.color} strokeWidth="2" strokeOpacity="0.6" />
           <ellipse cx="80" cy="56" rx="28" ry="6" fill="none" stroke={info.color} strokeWidth="2" strokeOpacity="0.6" />
         </svg>
       </div>
-      <div style={{ fontSize: 12, color: "#9a8a8a", letterSpacing: 3, marginBottom: 14, animation: "slideUpIn 0.6s 0.3s both" }}>LEVEL UP</div>
-      <div style={{ fontSize: 32, fontWeight: 800, marginBottom: 10, display: "flex", alignItems: "center", gap: 10, animation: "slideUpIn 0.6s 0.4s both" }}>
-        <span style={{ fontSize: 28 }}>{info.emoji}</span>
+      <div style={{ fontSize: 11, color: "#9a8a8a", letterSpacing: 3, marginBottom: 10, animation: "slideUpIn 0.6s 0.3s both" }}>LEVEL UP</div>
+      <div style={{ fontSize: 26, fontWeight: 800, marginBottom: 8, display: "flex", alignItems: "center", gap: 8, animation: "slideUpIn 0.6s 0.4s both" }}>
+        <span style={{ fontSize: 23 }}>{info.emoji}</span>
         <span style={{
           background: `linear-gradient(135deg, ${info.color}, #c49a2a)`,
           WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent",
         }}>Level.{toLevel}</span>
       </div>
-      <div style={{ fontSize: 17, fontWeight: 700, color: "#3a2f2f", marginBottom: 32, animation: "slideUpIn 0.6s 0.5s both" }}>{info.label}</div>
+      <div style={{ fontSize: 15, fontWeight: 700, color: "#3a2f2f", marginBottom: 24, animation: "slideUpIn 0.6s 0.5s both" }}>{info.label}</div>
       <button onClick={onClose} style={{
-        padding: "14px 42px", borderRadius: 999, fontSize: 15, fontWeight: 700,
+        padding: "12px 36px", borderRadius: 999, fontSize: 14, fontWeight: 700,
         background: `linear-gradient(135deg, ${info.color}, #c49a2a)`,
         border: "none", color: "white", cursor: "pointer",
         boxShadow: `0 8px 32px ${info.color}55`,
         animation: "slideUpIn 0.6s 0.6s both",
       }}>✦ 器を受け取る</button>
+    </div>
     </div>
   );
 }
@@ -655,6 +664,16 @@ function TalentMatchModal({ onClose, insightMessage, topValues, topTalents, aiPc
   const [savedAt, setSavedAt] = React.useState(""); // 保存済み結果の診断日
   const [tenshoku, setTenshoku] = React.useState(null); // 3つの才能が指す方向（天職ヒント）
   const [showPuzzleVideo, setShowPuzzleVideo] = React.useState(false); // puzzle.mp4用（将来実装）
+
+  // 画面側で「この3つをつなぐと見えてくるのは——」を必ず前に付けて表示するため、
+  // AIの出力にこの接続句が重複して含まれていた場合は取り除く（表示の二重化を防ぐ安全策）
+  const sanitizeTenshoku = (t) => {
+    if (!t || typeof t.houkou !== "string") return t;
+    const prefix = "この3つをつなぐと見えてくるのは——";
+    let houkou = t.houkou.trim();
+    while (houkou.startsWith(prefix)) houkou = houkou.slice(prefix.length).trim();
+    return { ...t, houkou };
+  };
 
   // AI診断を実行（初回・再診断ボタンの両方から呼ばれる）
   const runDiagnosis = async () => {
@@ -677,7 +696,7 @@ function TalentMatchModal({ onClose, insightMessage, topValues, topTalents, aiPc
           headers: { "Content-Type": "application/json", "X-License-Key": loadLS("license_key", "") },
           body: JSON.stringify({
             model: "claude-sonnet-4-6",
-            max_tokens: 1500,
+            max_tokens: 2200,
             system: `あなたは才能発掘の専門家です。
 ユーザーが積み重ねてきた支出の記録から、
 その人だけの才能と価値を深く読み解いてください。
@@ -697,7 +716,7 @@ function TalentMatchModal({ onClose, insightMessage, topValues, topTalents, aiPc
     { "title": "補完才能の名前（10字以内）", "description": "その人と組むとどう循環が加速するか（50字以内）", "emoji": "絵文字1つ" }
   ],
   "tenshoku": {
-    "houkou": "3つの才能をつなぐと見えてくる仕事の方向性。「この3つをつなぐと見えてくるのは——」に続く形で書く（60字以内）",
+    "houkou": "3つの才能をつなぐと見えてくる仕事の方向性。画面側で「この3つをつなぐと見えてくるのは——」という接続句を自動で前に付けて表示するので、houkouにはこの接続句を絶対に含めず、そこに続く文章だけを書く（60字以内）",
     "shigoto": [
       { "name": "具体的な職業・活動名（14字以内）", "riyuu": "その人のどの才能が活きるか（22字以内）" },
       { "name": "具体的な職業・活動名（14字以内）", "riyuu": "その人のどの才能が活きるか（22字以内）" },
@@ -716,10 +735,13 @@ talentsのルール：
 
 tenshokuのルール：
 ・houkouは3つの才能すべてを1本の線でつなぐ。断定せず「方向」として示す
+・houkouの文頭に「この3つをつなぐと見えてくるのは——」を繰り返し書かない（画面側で自動的に付くため、書くと文章が二重に表示されてしまう）
 ・shigotoは3つとも実在する具体的な職業・活動名にする（抽象的な「人を支える仕事」等は禁止）
 ・国家資格や長期の専門教育が必須の職業（医師・弁護士等）は挙げない
 ・3つのうち最低1つは、会社員への転職ではなく、副業や個人で今日から小さく始められる活動にする（例：発信、ワークショップ主催、オンラインコミュニティ運営）
-・riyuuはtalentsで挙げた才能の言葉を引用してつなげる`,
+・riyuuはtalentsで挙げた才能の言葉を引用してつなげる
+
+重要：tenshokuは省略禁止の必須フィールドです。talentsを書き終えたら、必ず最後にtenshokuも含めてJSONを完結させてください。`,
             messages: [{
               role: "user",
               content: `【蓄積された価値タグ】${topValuesStr}
@@ -740,14 +762,15 @@ tenshokuのルール：
         const text = data.content?.find(c => c.type === "text")?.text || "{}";
         const clean = text.replace(/```json|```/g, "").trim();
         const parsed = JSON.parse(clean);
+        const cleanTenshoku = sanitizeTenshoku(parsed.tenshoku);
         setTalents(parsed.talents || []);
-        setTenshoku(parsed.tenshoku || null);
+        setTenshoku(cleanTenshoku);
         setPhase("reveal");
         // 1枚ずつ順番にリビール（最後に天職カード）
         parsed.talents.forEach((_, i) => {
           setTimeout(() => setRevealIdx(i), i * 800 + 300);
         });
-        if (parsed.tenshoku) {
+        if (cleanTenshoku) {
           setTimeout(() => setRevealIdx(parsed.talents.length), parsed.talents.length * 800 + 700);
         }
         // 補完ピース図鑑用に保存（Lv5以降、マイページからいつでも見返せるように）
@@ -756,7 +779,7 @@ tenshokuのルール：
           saveLS("talentPuzzleResult", {
             talents: parsed.talents || [],
             complementaryNeeds: parsed.complementary_needs || [],
-            tenshoku: parsed.tenshoku || null,
+            tenshoku: cleanTenshoku,
             savedAt: nowIso,
           });
           setSavedAt(nowIso);
@@ -772,7 +795,7 @@ tenshokuのルール：
     const saved = loadLS("talentPuzzleResult", null);
     if (saved?.talents?.length) {
       setTalents(saved.talents);
-      setTenshoku(saved.tenshoku || null);
+      setTenshoku(sanitizeTenshoku(saved.tenshoku));
       setSavedAt(saved.savedAt || "");
       setPhase("reveal");
       saved.talents.forEach((_, i) => {
@@ -791,8 +814,11 @@ tenshokuのルール：
     <div style={{
       position: "fixed", inset: 0, zIndex: 500,
       background: "radial-gradient(ellipse at center, #1a0a3a 0%, #0a0520 100%)",
-      display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: 32,
       overflowY: "auto",
+    }}>
+    <div style={{
+      minHeight: "100%",
+      display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: 32,
     }}>
       {/* puzzle.mp4: 将来「才能マッチング通知」演出用（現在は非表示） */}
       {showPuzzleVideo && (
@@ -950,20 +976,7 @@ tenshokuのルール：
         animation: "slideUpIn 0.8s 0.8s both",
         boxShadow: "0 8px 40px #ffd97a55", zIndex: 1, position: "relative",
       }}>✦ 閉じる</button>
-
-      {/* 再診断ボタン（保存済み結果の表示中のみ） */}
-      {phase === "reveal" && !error && savedAt && (
-        <div style={{ zIndex: 1, marginTop: 16, textAlign: "center", animation: "slideUpIn 0.8s 1.0s both" }}>
-          <div style={{ fontSize: 10, color: "#8a7a9a", marginBottom: 6 }}>
-            {(() => { try { const d = new Date(savedAt); return `${d.getFullYear()}年${d.getMonth() + 1}月${d.getDate()}日の診断結果`; } catch { return "保存済みの診断結果"; } })()}
-          </div>
-          <button onClick={runDiagnosis} style={{
-            fontSize: 11, color: "#c07fb0", background: "none",
-            border: "1px solid #c07fb055", borderRadius: 999, padding: "8px 18px",
-            cursor: "pointer",
-          }}>🧩 ピースが増えたので、才能を診断し直す</button>
-        </div>
-      )}
+    </div>
     </div>
   );
 }
@@ -1514,7 +1527,8 @@ export default function App() {
   const [aiResult, setAiResult] = useState(null);
   const [ripples, setRipples] = useState([]);
   const [showStartVideo, setShowStartVideo] = useState(true);
-  const [hasPlayedUtuwa, setHasPlayedUtuwa] = useState(false);
+  const [hasPlayedUtuwa, setHasPlayedUtuwa] = useState(() => loadLS("hasPlayedUtuwa", false));
+  useEffect(() => { saveLS("hasPlayedUtuwa", hasPlayedUtuwa); }, [hasPlayedUtuwa]);
   const [showSplash, setShowSplash] = useState(true);
   const [levelUpInfo, setLevelUpInfo] = useState(null);
   const [pendingLevelUp, setPendingLevelUp] = useState(null); // AIResultCardが閉じるまで保留するレベルアップ演出
