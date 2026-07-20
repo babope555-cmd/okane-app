@@ -615,10 +615,11 @@ function LevelUpModal({ fromLevel, toLevel, onClose, skipFlash }) {
       position: "fixed", inset: 0, zIndex: 500,
       background: `radial-gradient(ellipse at 50% 35%, ${info.color}1a 0%, transparent 60%), #fdf8f5`,
       display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", padding: 32,
+      overflowY: "auto",
     }}>
       <Sparkles count={40} color={info.color} />
       <Sparkles count={20} color="#c49a2a" />
-      <div style={{ marginBottom: 28, animation: "vesselGrow 0.8s 0.2s both" }}>
+      <div style={{ marginBottom: 28, animation: "vesselGrowCenter 0.8s 0.2s both" }}>
         <svg width="200" height="200" viewBox="0 0 160 160">
           <path d="M52 55 Q40 70 36 95 Q34 120 80 130 Q126 120 124 95 Q120 70 108 55 Z"
             fill={`${info.color}12`} stroke={info.color} strokeWidth="2" strokeOpacity="0.6" />
@@ -4015,6 +4016,7 @@ insight_messageとして未発見ピースへの気づきを必ず含めてく�
         @keyframes floatDot2 { 0%,100%{transform:translateY(0) translateX(0);opacity:0.6} 50%{transform:translateY(-10px) translateX(1px);opacity:1} }
         @keyframes bounceIn { 0%{transform:scale(0.3);opacity:0} 60%{transform:scale(1.15);opacity:1} 80%{transform:scale(0.95)} 100%{transform:scale(1)} }
         @keyframes vesselGrow { from{transform:translateX(-50%) scale(0.5);opacity:0} to{transform:translateX(-50%) scale(1);opacity:1} }
+        @keyframes vesselGrowCenter { from{transform:scale(0.5);opacity:0} to{transform:scale(1);opacity:1} }
         @keyframes sparkleFloat { 0%{opacity:0;transform:translateY(0) scale(0.5)} 30%{opacity:1;transform:translateY(-8px) scale(1)} 70%{opacity:0.8;transform:translateY(-16px) scale(1)} 100%{opacity:0;transform:translateY(-24px) scale(0.5)} }
         @keyframes fadeInOut { 0%{opacity:0} 30%{opacity:1} 70%{opacity:1} 100%{opacity:0} }
         input[type=range] { -webkit-appearance:none; appearance:none; border-radius:999px; outline:none; cursor:pointer; }
