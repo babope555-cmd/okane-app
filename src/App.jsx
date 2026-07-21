@@ -876,8 +876,8 @@ tenshokuのルール：
               transform: revealIdx >= i ? "translateY(0)" : "translateY(12px)",
               transition: "all 0.6s cubic-bezier(0.16,1,0.3,1)",
             }}>
-              <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 10, marginBottom: 10 }}>
-                <span style={{ fontSize: 28 }}>{t.emoji}</span>
+              <div style={{ position: "relative", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 10, minHeight: 28 }}>
+                <span style={{ position: "absolute", left: 0, fontSize: 28 }}>{t.emoji}</span>
                 <span style={{ fontSize: 15, fontWeight: 900, color: "#ffd97a" }}>{t.title}</span>
               </div>
               {t.futsuu || t.kachi ? (
@@ -910,8 +910,8 @@ tenshokuのルール：
               transition: "all 0.8s cubic-bezier(0.16,1,0.3,1)",
               boxShadow: revealIdx >= talents.length ? "0 4px 30px rgba(255,217,122,0.25)" : "none",
             }}>
-              <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: 10, marginBottom: 10 }}>
-                <span style={{ fontSize: 28 }}>🌟</span>
+              <div style={{ position: "relative", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 10, minHeight: 28 }}>
+                <span style={{ position: "absolute", left: 0, fontSize: 28 }}>🌟</span>
                 <span style={{ fontSize: 15, fontWeight: 900, color: "#ffd97a" }}>3つの才能が指す方向</span>
               </div>
               <div style={{ fontSize: 13, color: "#f0e8ff", lineHeight: 1.9, marginBottom: 6 }}>
@@ -960,7 +960,7 @@ tenshokuのルール：
           background: "rgba(192,127,176,0.15)", border: "1px solid #c07fb088",
           borderRadius: 16, padding: "16px 20px", maxWidth: 320,
         }}>
-          <div style={{ fontSize: 11, color: "#c07fb0", letterSpacing: 1, marginBottom: 6, textAlign: "center" }}>
+          <div style={{ fontSize: 14, color: "#c07fb0", fontWeight: 700, letterSpacing: 1, marginBottom: 8, textAlign: "center" }}>
             ✦ あなたの中の未発見ピース ✦
           </div>
           <div style={{ fontSize: 14, color: "#f0e8ff", lineHeight: 1.8, textAlign: "center" }}>
