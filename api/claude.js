@@ -68,6 +68,26 @@ export default async function handler(req, res) {
     return sendError(res, 403, "forbidden_origin", "許可されていないアクセス元です");
   }
 
+  // 2.5) ライセンスキー照合（REQUIRE_LICENSE=true のときだけ発動）
+  const requireLicense = process.env.REQUIRE_LICENSE === "true";
+  const validKeys = new Set(
+    (process.env.VALID_LICENSE_KEYS || "")
+      .split(",")
+      .map((k) => k.trim())
+      .filter(Boolean)
+  );
+  if (requireLicense) {
+    const userLicense = (req.headers["x-license-key"] || "").trim();
+    if (!userLicense || !validKeys.has(userLicense)) {
+      return sendError(
+        res,
+        402,
+        "license_required",
+        "この機能はライセンスキーをお持ちの方のみご利用いただけます"
+      );
+    }
+  }
+
   // 3) APIキー確認（Vercel環境変数）
   const apiKey = process.env.ANTHROPIC_API_KEY;
   if (!apiKey) {
