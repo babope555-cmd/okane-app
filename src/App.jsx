@@ -2565,6 +2565,50 @@ insight_messageとして未発見ピースへの気づきを必ず含めてく�
         );
       })()}
 
+      {/* 今日の小さなクエスト */}
+      {(() => {
+        const QUESTS = [
+          { emoji: "☀️", text: "いつもより100円だけ、自分が喜ぶことに使ってみる" },
+          { emoji: "🎁", text: "誰かを喜ばせるためにお金を使ってみる" },
+          { emoji: "🚀", text: "ちょっと怖いけど、未来の自分のために使ってみる" },
+          { emoji: "🌱", text: "初めてのことにお金を使って、新しい自分を試してみる" },
+          { emoji: "💝", text: "応援したい人・ものに、ほんの少し投げ銭してみる" },
+          { emoji: "✨", text: "「これ好きかも」と思ったものを、理由なく買ってみる" },
+          { emoji: "🧘", text: "自分のための時間をお金で買ってみる（家事代行・外食など）" },
+          { emoji: "📚", text: "気になっていた本・講座を、迷わず購入してみる" },
+        ];
+        // 日付ベースでクエストをローテーション
+        const dayIndex = Math.floor(Date.now() / 86400000) % QUESTS.length;
+        const quest = QUESTS[dayIndex];
+        return (
+          <div style={{
+            margin: "0 0 16px", padding: "14px 16px",
+            background: "linear-gradient(135deg, #fffbf0, #fff4e0)",
+            borderRadius: 16, border: "1px solid #f0e0b0",
+            boxShadow: "0 2px 12px rgba(200,160,60,0.08)",
+          }}>
+            <div style={{ fontSize: 12, fontWeight: 700, color: "#b07a20", marginBottom: 6, letterSpacing: 1 }}>
+              ⭐ 今日の小さなクエスト
+            </div>
+            <div style={{ display: "flex", alignItems: "flex-start", gap: 10 }}>
+              <span style={{ fontSize: 24, lineHeight: 1.2 }}>{quest.emoji}</span>
+              <div>
+                <div style={{ fontSize: 13, color: "#5a3a10", fontWeight: 600, lineHeight: 1.6 }}>{quest.text}</div>
+                <div style={{ fontSize: 10, color: "#b09060", marginTop: 4 }}>記録するとピースが育ちます🌱</div>
+              </div>
+            </div>
+            <button onClick={() => setShowInput(true)} style={{
+              marginTop: 10, width: "100%", padding: "9px 0", borderRadius: 12,
+              background: "linear-gradient(90deg, #f0c84a, #e0a830)",
+              border: "none", cursor: "pointer",
+              fontSize: 12, fontWeight: 700, color: "#3a2000", letterSpacing: 0.5,
+            }}>
+              ＋ クエストを記録する
+            </button>
+          </div>
+        );
+      })()}
+
     </div>
     );
   };
@@ -2758,35 +2802,83 @@ insight_messageとして未発見ピースへの気づきを必ず含めてく�
           const maxCount = allDomains[0]?.[1]?.count || 1;
           return (
             <div style={{ background: "white", borderRadius: 20, padding: "18px 18px 14px", marginBottom: 16, border: "1px solid #e0d8f0", boxShadow: "0 2px 16px rgba(160,100,200,0.08)" }}>
-              <div style={{ fontSize: 13, fontWeight: 700, color: "#7a5a98", marginBottom: 4, display: "flex", alignItems: "center", gap: 6 }}>
-                🧩 あなたの才能、育ってます
+              <div style={{ fontSize: 13, fontWeight: 700, color: "#7a5a98", marginBottom: 2, display: "flex", alignItems: "center", gap: 6 }}>
+                🧩 あなたの才能図鑑
               </div>
-              <div style={{ fontSize: 10, color: "#a090b0", marginBottom: 14 }}>使うたびに、あなたの"普通"がピースになっていく</div>
-              {allDomains.length === 0 ? (
-                <div style={{ fontSize: 12, color: "#c0a8d0", lineHeight: 1.6 }}>支出を記録すると才能ピースが育ちます🌱</div>
-              ) : (
-                <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-                  {allDomains.map(([label, v], i) => (
-                    <div key={label}>
-                      <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 4, alignItems: "center" }}>
-                        <span style={{ fontSize: 12, color: "#3a2a4a", fontWeight: i === 0 ? 700 : 400 }}>
-                          {i === 0 ? "🌟 " : ""}{label}
-                          {i === 0 && <span style={{ fontSize: 9, background: `${v.bar}22`, color: v.bar, borderRadius: 999, padding: "1px 6px", marginLeft: 6, fontWeight: 700 }}>最多</span>}
-                        </span>
-                        <span style={{ fontSize: 11, fontWeight: 700, color: v.bar }}>{v.count}個</span>
-                      </div>
-                      <div style={{ height: 8, borderRadius: 999, background: "#f4f0f8", overflow: "hidden" }}>
-                        <div style={{
-                          height: "100%", borderRadius: 999,
-                          width: `${Math.round((v.count / maxCount) * 100)}%`,
-                          background: `linear-gradient(90deg, ${v.bar}88, ${v.bar})`,
-                          transition: "width 0.8s ease",
-                        }} />
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
+              <div style={{ fontSize: 10, color: "#a090b0", marginBottom: 14 }}>記録するたびに才能が発見されていく</div>
+              {(() => {
+                // 全6領域を固定で定義（順序固定）
+                const ALL_DOMAINS = [
+                  { label: "成長・学習",     bar: "#3b82f6", emoji: "📘" },
+                  { label: "創造・表現",     bar: "#ec4899", emoji: "🎨" },
+                  { label: "つながり",       bar: "#a855f7", emoji: "🤝" },
+                  { label: "安定・安心",     bar: "#22c55e", emoji: "🌿" },
+                  { label: "貢献・利他",     bar: "#f97316", emoji: "🌸" },
+                  { label: "個性・ワクワク", bar: "#eab308", emoji: "✨" },
+                ];
+                // 発見の閾値（この数を超えると「発見済み」）
+                const DISCOVER_THRESHOLD = 3;
+                // 各領域のカウントをdomainTotalsから取得
+                return (
+                  <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+                    {ALL_DOMAINS.map(({ label, bar, emoji }) => {
+                      const v = domainTotals[label];
+                      const count = v?.count || 0;
+                      const discovered = count >= DISCOVER_THRESHOLD;
+                      const pct = discovered ? Math.min(100, Math.round((count / Math.max(maxCount, DISCOVER_THRESHOLD)) * 100)) : Math.round((count / DISCOVER_THRESHOLD) * 100);
+                      const remaining = Math.max(0, DISCOVER_THRESHOLD - count);
+                      return (
+                        <div key={label}>
+                          <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 4, alignItems: "center" }}>
+                            {discovered ? (
+                              <span style={{ fontSize: 12, color: "#3a2a4a", fontWeight: 700, display: "flex", alignItems: "center", gap: 4 }}>
+                                <span>{emoji}</span>{label}
+                                {count === (allDomains[0]?.[1]?.count || 0) && count > 0 && (
+                                  <span style={{ fontSize: 9, background: `${bar}22`, color: bar, borderRadius: 999, padding: "1px 6px", marginLeft: 4, fontWeight: 700 }}>最多</span>
+                                )}
+                              </span>
+                            ) : (
+                              <span style={{ fontSize: 12, color: "#c0b8d0", fontWeight: 400, display: "flex", alignItems: "center", gap: 4 }}>
+                                <span style={{ filter: "grayscale(1) opacity(0.4)" }}>{emoji}</span>
+                                <span style={{ color: "#c0b8d0" }}>？？？</span>
+                                <span style={{ fontSize: 9, background: "#f0eaf8", color: "#b0a0c0", borderRadius: 999, padding: "1px 6px", marginLeft: 2 }}>未発見</span>
+                              </span>
+                            )}
+                            <span style={{ fontSize: 11, fontWeight: 700, color: discovered ? bar : "#d0c0e0" }}>
+                              {discovered ? `${count}個` : `あと${remaining}回`}
+                            </span>
+                          </div>
+                          <div style={{ height: 8, borderRadius: 999, background: "#f4f0f8", overflow: "hidden" }}>
+                            <div style={{
+                              height: "100%", borderRadius: 999,
+                              width: `${pct}%`,
+                              background: discovered
+                                ? `linear-gradient(90deg, ${bar}88, ${bar})`
+                                : "linear-gradient(90deg, #d8cce8, #c8b8dc)",
+                              transition: "width 0.8s ease",
+                            }} />
+                          </div>
+                          {!discovered && count > 0 && (
+                            <div style={{ fontSize: 9, color: "#c0b0d0", marginTop: 2 }}>
+                              もう少し…あと{remaining}回の記録で発見できるかも🌱
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })}
+                    {/* 発見済み数サマリー */}
+                    {(() => {
+                      const discoveredCount = ALL_DOMAINS.filter(({ label }) => (domainTotals[label]?.count || 0) >= DISCOVER_THRESHOLD).length;
+                      return (
+                        <div style={{ marginTop: 4, padding: "8px 12px", borderRadius: 12, background: "#faf8ff", border: "1px solid #e8e0f4", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+                          <span style={{ fontSize: 11, color: "#7a5a98" }}>発見した才能</span>
+                          <span style={{ fontSize: 13, fontWeight: 700, color: "#7a5a98" }}>{discoveredCount} <span style={{ fontSize: 10, fontWeight: 400 }}>/ 6 領域</span></span>
+                        </div>
+                      );
+                    })()}
+                  </div>
+                );
+              })()}
             </div>
           );
         })()}
