@@ -1198,6 +1198,37 @@ function VesselDisplay({ level, energy, maxEnergy }) {
 // ─── AI Result Card ────────────────────────────────────────────
 function AIResultCard({ result, onClose, onCloseToHome }) {
   if (!result) return null;
+  // 無料版クエスト専用カード（AI判定なし、questFeedbackのみ）
+  if (result.questOnly) {
+    return (
+      <div style={{
+        position: "fixed", inset: 0, background: "#00000088", zIndex: 100,
+        display: "flex", alignItems: "center", justifyContent: "center", padding: 20,
+      }} onClick={onCloseToHome}>
+        <div onClick={e => e.stopPropagation()} style={{
+          background: "linear-gradient(145deg, #fffbf0, #fff4e0)",
+          border: "1px solid #f0d080", borderRadius: 24, padding: 28,
+          maxWidth: 320, width: "100%", textAlign: "center",
+          boxShadow: "0 0 40px rgba(240,200,80,0.3)",
+          animation: "slideUpIn 0.4s cubic-bezier(0.16,1,0.3,1)",
+        }}>
+          <div style={{ fontSize: 32, marginBottom: 8 }}>{result.questEmoji || "⭐"}</div>
+          <div style={{ fontSize: 15, fontWeight: 700, color: "#b07a20", marginBottom: 12 }}>
+            クエスト達成！ピースが育ちました
+          </div>
+          <div style={{ fontSize: 14, color: "#5a3a10", lineHeight: 1.8, marginBottom: 20 }}>
+            🌱 {result.questFeedback}
+          </div>
+          <button onClick={onCloseToHome} style={{
+            width: "100%", padding: "12px 0", borderRadius: 14,
+            background: "linear-gradient(90deg, #f0c84a, #e0a830)",
+            border: "none", cursor: "pointer",
+            fontSize: 14, fontWeight: 700, color: "#3a2000",
+          }}>とじる</button>
+        </div>
+      </div>
+    );
+  }
   const [showDetail, setShowDetail] = React.useState(false);
   const pts = result.energy;
   const isBonus = result.bonus;
@@ -1867,6 +1898,16 @@ insight_messageとして未発見ピースへの気づきを必ず含めてく�
       setHistory(h => [newEntry, ...h.slice(0, 499)]);
       setStats(s => StorageService.updateStats(s, newEntry));
 
+      // パズルピース成長トースト
+      if (valueTags.length > 0) {
+        setPieceToast(valueTags.slice(0, 2));
+        setTimeout(() => setPieceToast([]), 3000);
+      }
+
+      // ホーム画面「あなたの才能ピース」の成長ハイライト対象を記録
+      const grownDomains = Array.from(new Set(valueTags.map(t => TALENT_TAG_MAP[t]?.label).filter(Boolean)));
+      if (grownDomains.length > 0) setRecentlyGrownPieces(grownDomains);
+
       // クエスト記録ログ保存（③の土台）
       if (activeQuest) {
         const questCount = questLog.filter(q => q.questId === activeQuest.id).length;
@@ -1891,20 +1932,15 @@ insight_messageとして未発見ピースへの気づきを必ず含めてく�
           entryId: newEntry.id,
         };
         setQuestLog(prev => [logEntry, ...prev.slice(0, 199)]);
-        // aiResultにクエストフィードバックを追加
-        setAiResult(prev => prev ? { ...prev, questFeedback, questEmoji: activeQuest.emoji } : prev);
+        // aiResultにクエストフィードバックを追加（無料版=null の場合も専用カードとして表示）
+        setAiResult(prev => ({
+          ...(prev || {}),
+          questFeedback,
+          questEmoji: activeQuest.emoji,
+          questOnly: !prev, // 無料版フラグ（questフィードバックのみ表示）
+        }));
         setActiveQuest(null);
       }
-
-      // パズルピース成長トースト
-      if (valueTags.length > 0) {
-        setPieceToast(valueTags.slice(0, 2));
-        setTimeout(() => setPieceToast([]), 3000);
-      }
-
-      // ホーム画面「あなたの才能ピース」の成長ハイライト対象を記録
-      const grownDomains = Array.from(new Set(valueTags.map(t => TALENT_TAG_MAP[t]?.label).filter(Boolean)));
-      if (grownDomains.length > 0) setRecentlyGrownPieces(grownDomains);
 
     } catch (err) {
       const count = selTags.length || 2;
