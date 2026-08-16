@@ -1908,40 +1908,6 @@ insight_messageとして未発見ピースへの気づきを必ず含めてく�
       const grownDomains = Array.from(new Set(valueTags.map(t => TALENT_TAG_MAP[t]?.label).filter(Boolean)));
       if (grownDomains.length > 0) setRecentlyGrownPieces(grownDomains);
 
-      // クエスト記録ログ保存（③の土台）
-      if (activeQuest) {
-        const questCount = questLog.filter(q => q.questId === activeQuest.id).length;
-        // 回数に応じてフィードバック文を変える（断定しない・かもしれない）
-        const questFeedbacks = {
-          1: `${activeQuest.text.slice(0, 12)}…と、気持ちが動くみたい。`,
-          2: `"${activeQuest.candidateTags[0]}"に惹かれる傾向があるのかも。`,
-          3: `このパターン、3回目。あなたの中に何かありそうです。`,
-          5: `あなたは、${activeQuest.candidateTags[0]}でエネルギーが動く人かもしれません。`,
-        };
-        const feedbackKey = questCount === 0 ? 1 : questCount === 1 ? 2 : questCount === 2 ? 3 : questCount >= 4 ? 5 : 2;
-        const questFeedback = questFeedbacks[feedbackKey];
-        const logEntry = {
-          date: new Date().toISOString(),
-          questId: activeQuest.id,
-          questText: activeQuest.text,
-          candidateTags: activeQuest.candidateTags,
-          spendCategory: selCat?.label || "",
-          emotion: selFeeling?.label || "",
-          pieceGrowth: grownDomains,
-          questFeedback,
-          entryId: newEntry.id,
-        };
-        setQuestLog(prev => [logEntry, ...prev.slice(0, 199)]);
-        // aiResultにクエストフィードバックを追加（無料版=null の場合も専用カードとして表示）
-        setAiResult(prev => ({
-          ...(prev || {}),
-          questFeedback,
-          questEmoji: activeQuest.emoji,
-          questOnly: !prev, // 無料版フラグ（questフィードバックのみ表示）
-        }));
-        setActiveQuest(null);
-      }
-
     } catch (err) {
       const count = selTags.length || 2;
       const fallbackIsHighEmotion = ["waku", "shiawase"].includes(selFeeling?.id);
@@ -1975,6 +1941,35 @@ insight_messageとして未発見ピースへの気づきを必ず含めてく�
       setStats(s => StorageService.updateStats(s, fallbackEntry));
     } finally {
       setAiLoading(false);
+      // クエスト記録ログ保存（③の土台）— try/catchどちらでも実行
+      if (activeQuest) {
+        const questCount = questLog.filter(q => q.questId === activeQuest.id).length;
+        const questFeedbacks = {
+          0: `${activeQuest.text.slice(0, 12)}…と、気持ちが動くみたい。`,
+          1: `"${activeQuest.candidateTags[0]}"に惹かれる傾向があるのかも。`,
+          2: `このパターン、3回目。あなたの中に何かありそうです。`,
+          4: `あなたは、${activeQuest.candidateTags[0]}でエネルギーが動く人かもしれません。`,
+        };
+        const feedbackKey = questCount === 0 ? 0 : questCount === 1 ? 1 : questCount === 2 ? 2 : questCount >= 4 ? 4 : 1;
+        const questFeedback = questFeedbacks[feedbackKey];
+        const logEntry = {
+          date: new Date().toISOString(),
+          questId: activeQuest.id,
+          questText: activeQuest.text,
+          candidateTags: activeQuest.candidateTags,
+          spendCategory: selCat?.label || "",
+          emotion: selFeeling?.label || "",
+          questFeedback,
+        };
+        setQuestLog(prev => [logEntry, ...prev.slice(0, 199)]);
+        setAiResult(prev => ({
+          ...(prev || {}),
+          questFeedback,
+          questEmoji: activeQuest.emoji,
+          questOnly: !prev,
+        }));
+        setActiveQuest(null);
+      }
     }
   };
 
