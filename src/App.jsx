@@ -1371,7 +1371,23 @@ function AIResultCard({ result, onClose, onCloseToHome }) {
             </div>
           </div>
         )}
-        {result.circulationQuest && (
+        {/* クエスト達成フィードバック（クエスト経由の記録のみ表示） */}
+        {result.questFeedback && (
+          <div style={{
+            marginBottom: 16, padding: "14px 16px",
+            background: "linear-gradient(135deg, #fffbf0, #fff4e0)",
+            borderRadius: 12, border: "1px solid #f0d080",
+          }}>
+            <div style={{ fontSize: 11, color: "#b07a20", fontWeight: 700,
+              letterSpacing: 1, marginBottom: 6, display: "flex", alignItems: "center", gap: 6 }}>
+              {result.questEmoji || "⭐"} クエスト達成！ピースが育ちました
+            </div>
+            <div style={{ fontSize: 13, color: "#5a3a10", lineHeight: 1.7 }}>
+              🌱 {result.questFeedback}
+            </div>
+          </div>
+        )}
+        {result.circulationQuest && !result.questFeedback && (
           <div style={{
             marginBottom: 16, padding: "12px 16px",
             background: "linear-gradient(135deg, #f3e8ff, #ede4fc)",
@@ -1536,6 +1552,11 @@ export default function App() {
   const [obAnswersGlobal, setObAnswersGlobal] = useState({});
   const [obStepGlobal, setObStepGlobal] = useState(0);
 
+
+  // ── クエスト管理 ──────────────────────────────────────────────
+  const [activeQuest, setActiveQuest] = useState(null);
+  const [questLog, setQuestLog] = useState(() => loadLS("questLog", []));
+  useEffect(() => { saveLS("questLog", questLog); }, [questLog]);
   const curLevel = LEVELS.find(l => l.lv === level) || LEVELS[0];
   const nextLevel = LEVELS.find(l => l.lv === level + 1);
   const progressPct = nextLevel
@@ -1844,6 +1865,35 @@ insight_messageとして未発見ピースへの気づきを必ず含めてく�
       };
       setHistory(h => [newEntry, ...h.slice(0, 499)]);
       setStats(s => StorageService.updateStats(s, newEntry));
+
+      // クエスト記録ログ保存（③の土台）
+      if (activeQuest) {
+        const questCount = questLog.filter(q => q.questId === activeQuest.id).length;
+        // 回数に応じてフィードバック文を変える（断定しない・かもしれない）
+        const questFeedbacks = {
+          1: `${activeQuest.text.slice(0, 12)}…と、気持ちが動くみたい。`,
+          2: `"${activeQuest.candidateTags[0]}"に惹かれる傾向があるのかも。`,
+          3: `このパターン、3回目。あなたの中に何かありそうです。`,
+          5: `あなたは、${activeQuest.candidateTags[0]}でエネルギーが動く人かもしれません。`,
+        };
+        const feedbackKey = questCount === 0 ? 1 : questCount === 1 ? 2 : questCount === 2 ? 3 : questCount >= 4 ? 5 : 2;
+        const questFeedback = questFeedbacks[feedbackKey];
+        const logEntry = {
+          date: new Date().toISOString(),
+          questId: activeQuest.id,
+          questText: activeQuest.text,
+          candidateTags: activeQuest.candidateTags,
+          spendCategory: selCat?.label || "",
+          emotion: selFeeling?.label || "",
+          pieceGrowth: grownDomains,
+          questFeedback,
+          entryId: newEntry.id,
+        };
+        setQuestLog(prev => [logEntry, ...prev.slice(0, 199)]);
+        // aiResultにクエストフィードバックを追加
+        setAiResult(prev => prev ? { ...prev, questFeedback, questEmoji: activeQuest.emoji } : prev);
+        setActiveQuest(null);
+      }
 
       // パズルピース成長トースト
       if (valueTags.length > 0) {
@@ -2568,18 +2618,23 @@ insight_messageとして未発見ピースへの気づきを必ず含めてく�
       {/* 今日の小さなクエスト */}
       {(() => {
         const QUESTS = [
-          { emoji: "☀️", text: "いつもより100円だけ、自分が喜ぶことに使ってみる" },
-          { emoji: "🎁", text: "誰かを喜ばせるためにお金を使ってみる" },
-          { emoji: "🚀", text: "ちょっと怖いけど、未来の自分のために使ってみる" },
-          { emoji: "🌱", text: "初めてのことにお金を使って、新しい自分を試してみる" },
-          { emoji: "💝", text: "応援したい人・ものに、ほんの少し投げ銭してみる" },
-          { emoji: "✨", text: "「これ好きかも」と思ったものを、理由なく買ってみる" },
-          { emoji: "🧘", text: "自分のための時間をお金で買ってみる（家事代行・外食など）" },
-          { emoji: "📚", text: "気になっていた本・講座を、迷わず購入してみる" },
+          { id: "self_joy",      emoji: "☀️", text: "いつもより100円だけ、自分が喜ぶことに使ってみる",          candidateTags: ["感性", "好奇心", "自己理解"] },
+          { id: "give_joy",      emoji: "🎁", text: "誰かを喜ばせるためにお金を使ってみる",                    candidateTags: ["共感力", "支援力", "つながり"] },
+          { id: "brave_step",    emoji: "🚀", text: "ちょっと怖いけど、未来の自分のために使ってみる",          candidateTags: ["行動力", "挑戦力", "未来志向"] },
+          { id: "new_experience",emoji: "🌱", text: "初めてのことにお金を使って、新しい自分を試してみる",      candidateTags: ["挑戦力", "好奇心", "探究心", "行動力"] },
+          { id: "support",       emoji: "💝", text: "応援したい人・ものに、ほんの少し投げ銭してみる",          candidateTags: ["支援力", "共感力", "つながり"] },
+          { id: "instinct",      emoji: "✨", text: "「これ好きかも」と思ったものを、理由なく買ってみる",      candidateTags: ["感性", "好奇心", "直感力"] },
+          { id: "self_time",     emoji: "🧘", text: "自分のための時間をお金で買ってみる（家事代行・外食など）", candidateTags: ["感性", "自己理解", "改善力"] },
+          { id: "learn",         emoji: "📚", text: "気になっていた本・講座を、迷わず購入してみる",            candidateTags: ["探究心", "好奇心", "行動力"] },
         ];
         // 日付ベースでクエストをローテーション
         const dayIndex = Math.floor(Date.now() / 86400000) % QUESTS.length;
         const quest = QUESTS[dayIndex];
+        // クエストボタン押下：activeQuestをセットして記録画面を開く
+        const handleQuestStart = () => {
+          setActiveQuest(quest);
+          setShowInput(true);
+        };
         return (
           <div style={{
             margin: "0 0 16px", padding: "14px 16px",
@@ -2597,7 +2652,7 @@ insight_messageとして未発見ピースへの気づきを必ず含めてく�
                 <div style={{ fontSize: 10, color: "#b09060", marginTop: 4 }}>記録するとピースが育ちます🌱</div>
               </div>
             </div>
-            <button onClick={() => setShowInput(true)} style={{
+            <button onClick={handleQuestStart} style={{
               marginTop: 10, width: "100%", padding: "9px 0", borderRadius: 12,
               background: "linear-gradient(90deg, #f0c84a, #e0a830)",
               border: "none", cursor: "pointer",
@@ -3399,18 +3454,24 @@ insight_messageとして未発見ピースへの気づきを必ず含めてく�
         <button onClick={() => {
           const isShortcut = selCat?.id === "_time_invest_shortcut" || selCat?.id === "_comfort_shortcut";
           const isTimeInvest = selCat?.id === "_time_invest_shortcut";
-          if (inputStep === "sub") { setShowInput(false); resetInput(); return; }
+          if (inputStep === "sub") { setShowInput(false); resetInput(); setActiveQuest(null); return; }
           if (inputStep === "feeling") { isTimeInvest ? setInputStep("time_invest") : setInputStep("sub"); return; }
-          if (inputStep === "comfort_check") { selCat?.id === "_comfort_shortcut" ? (setShowInput(false), resetInput()) : isShortcut ? (setShowInput(false), resetInput()) : setInputStep("feeling"); return; }
-          if (inputStep === "time_invest") { isShortcut ? (setShowInput(false), resetInput()) : setInputStep("feeling"); return; }
+          if (inputStep === "comfort_check") { selCat?.id === "_comfort_shortcut" ? (setShowInput(false), resetInput(), setActiveQuest(null)) : isShortcut ? (setShowInput(false), resetInput(), setActiveQuest(null)) : setInputStep("feeling"); return; }
+          if (inputStep === "time_invest") { isShortcut ? (setShowInput(false), resetInput(), setActiveQuest(null)) : setInputStep("feeling"); return; }
           if (inputStep === "tags") { setInputStep("feeling"); return; }
           if (inputStep === "slider") { setInputStep("tags"); return; }
-          setShowInput(false); resetInput();
+          setShowInput(false); resetInput(); setActiveQuest(null);
         }} style={{ background: "none", border: "none", color: COLORS.softWhite, fontSize: 28, fontWeight: 700, cursor: "pointer", padding: 6, marginRight: 12, lineHeight: 1 }}>↩</button>
         <div style={{ flex: 1 }}>
           <div style={{ fontSize: 14, fontWeight: 700, color: COLORS.softWhite }}>
             {selCat ? `${selCat.icon} ${selCat.label}` : "支出を記録する"}
           </div>
+          {/* クエスト中バナー */}
+          {activeQuest && (
+            <div style={{ fontSize: 10, color: "#f0c84a", marginTop: 3, display: "flex", alignItems: "center", gap: 4 }}>
+              ⭐ クエスト中：{activeQuest.text}
+            </div>
+          )}
         </div>
       </div>
 
