@@ -2677,8 +2677,9 @@ insight_messageとして未発見ピースへの気づきを必ず含めてく�
           { id: "self_time",     emoji: "🧘", text: "自分のための時間をお金で買ってみる（家事代行・外食など）", candidateTags: ["感性", "自己理解", "改善力"] },
           { id: "learn",         emoji: "📚", text: "気になっていた本・講座を、迷わず購入してみる",            candidateTags: ["探究心", "好奇心", "行動力"] },
         ];
-        // 日付ベースでクエストをローテーション
-        const dayIndex = Math.floor(Date.now() / 86400000) % QUESTS.length;
+        // 日付ベースでクエストをローテーション（日本時間基準）
+        const jstOffset = 9 * 60 * 60 * 1000;
+        const dayIndex = Math.floor((Date.now() + jstOffset) / 86400000) % QUESTS.length;
         const quest = QUESTS[dayIndex];
         // クエストボタン押下：activeQuestをセットして記録画面を開く
         const handleQuestStart = () => {
