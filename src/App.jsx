@@ -1557,6 +1557,7 @@ export default function App() {
   const [activeQuest, setActiveQuest] = useState(null);
   const [questLog, setQuestLog] = useState(() => loadLS("questLog", []));
   useEffect(() => { saveLS("questLog", questLog); }, [questLog]);
+  const catGridRef = useRef(null);
   const curLevel = LEVELS.find(l => l.lv === level) || LEVELS[0];
   const nextLevel = LEVELS.find(l => l.lv === level + 1);
   const progressPct = nextLevel
@@ -2517,8 +2518,26 @@ insight_messageとして未発見ピースへの気づきを必ず含めてく�
         });
 
         return (
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 16 }}>
-            {gridItems}
+          <div ref={catGridRef}>
+            {/* クエスト中バナー */}
+            {activeQuest && (
+              <div style={{
+                marginBottom: 12, padding: "10px 14px",
+                background: "linear-gradient(135deg, #fffbf0, #fff4e0)",
+                borderRadius: 12, border: "1px solid #f0d080",
+                display: "flex", alignItems: "center", gap: 8,
+              }}>
+                <span style={{ fontSize: 18 }}>{activeQuest.emoji}</span>
+                <div style={{ flex: 1 }}>
+                  <div style={{ fontSize: 10, color: "#b07a20", fontWeight: 700, marginBottom: 2 }}>⭐ クエスト中</div>
+                  <div style={{ fontSize: 12, color: "#5a3a10", fontWeight: 600, lineHeight: 1.5 }}>{activeQuest.text}</div>
+                </div>
+                <button onClick={() => setActiveQuest(null)} style={{ background: "none", border: "none", color: "#c0a060", fontSize: 16, cursor: "pointer", padding: 4 }}>✕</button>
+              </div>
+            )}
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, marginBottom: 16 }}>
+              {gridItems}
+            </div>
           </div>
         );
       })()}
@@ -2633,7 +2652,12 @@ insight_messageとして未発見ピースへの気づきを必ず含めてく�
         // クエストボタン押下：activeQuestをセットして記録画面を開く
         const handleQuestStart = () => {
           setActiveQuest(quest);
-          setShowInput(true);
+          // カテゴリグリッドまでスクロール
+          setTimeout(() => {
+            if (catGridRef.current) {
+              catGridRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
+            }
+          }, 50);
         };
         return (
           <div style={{
