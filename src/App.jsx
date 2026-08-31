@@ -3576,18 +3576,18 @@ insight_messageとして未発見ピースへの気づきを必ず含めてく�
                           border: `2px solid ${sel ? "#a080d0" : bd}`,
                           color: sel ? "#5a3080" : "#6a5a7a",
                           cursor: "pointer", fontSize: 14, fontWeight: 500,
-                          display: "flex", alignItems: "center", justifyContent: "space-between",
+                          display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "nowrap",
                           gap: 8, transition: "all 0.15s",
                           boxShadow: sel ? "0 2px 10px rgba(160,120,200,0.25)" : "0 1px 4px rgba(0,0,0,0.06)",
                         }}>
-                          <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                          <div style={{ display: "flex", alignItems: "center", gap: 10, flex: 1 }}>
                             <div style={{
                               width: 36, height: 36, borderRadius: "50%",
                               background: "#ffffff", flexShrink: 0,
                               display: "flex", alignItems: "center", justifyContent: "center",
                               fontSize: 18, boxShadow: "0 1px 4px rgba(0,0,0,0.10)",
                             }}>{isOther ? "✏️" : (SUB_EMOJI[sub] || "✦")}</div>
-                            <span>{sub}</span>
+                            <span style={{ lineHeight: 1.4, textAlign: "left" }}>{sub}</span>
                           </div>
                           <span style={{ fontSize: 16, opacity: 0.5 }}>›</span>
                         </button>
